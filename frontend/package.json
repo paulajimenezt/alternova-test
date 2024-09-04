@@ -1,0 +1,19 @@
+{
+  "name": "alternova-frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulajimenezt/alternova-test.git"
+  },
+  "author": "Paula Jimenez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paulajimenezt/alternova-test/issues"
+  },
+  "homepage": "https://github.com/paulajimenezt/alternova-test#readme",
+  "description": ""
+}
