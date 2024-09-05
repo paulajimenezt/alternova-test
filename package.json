@@ -3,17 +3,25 @@
   "version": "1.0.0",
   "description": "This is my subsmission for the techical task assesment for Alternova Inc.",
   "main": "index.js",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "test": "jest"
+    "start": "npm run start:server && npm run start:client",
+    "start:frontend": "npm --prefix ./frontend start",
+    "start:backend": "npm --prefix ./backend start",
+    "install": "npm run install:frontend && npm run install:backend",
+    "install:frontend": "npm --prefix ./frontend install",
+    "install:backend": "npm --prefix ./backend install",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "npm --prefix ./frontend test",
+    "test:backend": "npm --prefix ./backend test"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/paulajimenezt/alternova-test.git"
   },
   "author": "Paula Jimenez",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/paulajimenezt/alternova-test/issues"
-  },
-  "homepage": "https://github.com/paulajimenezt/alternova-test#readme"
+  "license": "ISC"
 }
