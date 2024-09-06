@@ -1,4 +1,3 @@
-// TaskList.tsx
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import TaskCard, { Task } from "@/components/TaskCard";

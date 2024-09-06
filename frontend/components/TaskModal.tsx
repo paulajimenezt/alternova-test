@@ -60,7 +60,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
             placeholder={taskDescription ?? "Task Description"}
           />
           <TouchableOpacity style={styles.createButton} onPress={onCreate}>
-            <Text style={styles.buttonText}>Create Task</Text>
+            <Text style={styles.buttonText}>{title}</Text>
           </TouchableOpacity>
         </View>
       </View>

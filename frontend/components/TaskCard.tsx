@@ -1,6 +1,7 @@
-import React from "react";
-import { Text, StyleSheet, View } from "react-native";
+import React, { useState } from "react";
+import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import TaskModal from "./TaskModal";
 
 export interface Task {
   title: string;
@@ -9,8 +10,12 @@ export interface Task {
 }
 
 const TaskCard = (task: Task) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => setIsModalOpen(!isModalOpen)}
+    >
       <View style={styles.textContainer}>
         <Text style={styles.text}>{task.title}</Text>
         <Text>{task.description}</Text>
@@ -22,7 +27,18 @@ const TaskCard = (task: Task) => {
           <AntDesign name="checkcircleo" size={30} color="gray" />
         )}
       </View>
-    </View>
+
+      <TaskModal
+        onClose={() => {
+          setIsModalOpen(!isModalOpen);
+        }}
+        visible={isModalOpen}
+        title={"Edit task"}
+        taskTitle={task.title}
+        taskDescription={task.description}
+        onCreate={() => {}}
+      />
+    </TouchableOpacity>
   );
 };
 
