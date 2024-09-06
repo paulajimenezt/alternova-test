@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import TaskList from "@/components/TaskList";
 import TaskModal from "@/components/TaskModal";
+import { Task } from "@/components/TaskCard";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -18,6 +19,7 @@ const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tabPosition] = useState(new Animated.Value(0));
   const [isActiveTab, setIsActiveTab] = useState(true);
+  const [currentTask, setCurrentTask] = useState<Task | null>(null);
 
   const handleTabPress = (tabIndex: number) => {
     setIsActiveTab(tabIndex === 0);
@@ -25,6 +27,20 @@ const Home = () => {
       toValue: tabIndex,
       useNativeDriver: true,
     }).start();
+  };
+
+  const handleAddTask = () => {
+    setCurrentTask(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditTask = (task: Task) => {
+    setCurrentTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteTask = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -62,17 +78,22 @@ const Home = () => {
       </View>
       <View style={styles.container}>
         <ScrollView style={styles.scrollView}>
-          <TaskList isActive={isActiveTab} />
+          <TaskList
+            isActive={isActiveTab}
+            onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
+          />
         </ScrollView>
       </View>
       <TaskModal
-        onClose={() => {
-          setIsModalOpen(!isModalOpen);
-          handleTabPress(0);
-        }}
+        onClose={() => setIsModalOpen(false)}
         visible={isModalOpen}
-        title={"Add new task"}
+        title={currentTask ? "Edit task" : "Add new task"}
         onCreate={() => {}}
+        showDeleteButton={!!currentTask && !isActiveTab}
+        onDelete={handleDeleteTask}
+        taskTitle={currentTask?.title}
+        taskDescription={currentTask?.description}
       />
     </SafeAreaView>
   );
@@ -88,10 +109,11 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    width: "95%",
+    height: "95%",
     backgroundColor: "#E8E8E8",
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    width: "100%",
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
   },
   tabToggleContainer: {
     alignItems: "center",
@@ -101,7 +123,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#6495ED",
+    backgroundColor: "lightgray",
     borderRadius: 50,
     width: "85%",
     height: 80,
@@ -124,7 +146,7 @@ const styles = StyleSheet.create({
   },
   tabIndicator: {
     position: "absolute",
-    backgroundColor: "#007FFF",
+    backgroundColor: "gray",
     height: "100%",
     width: "45%",
     borderRadius: 50,

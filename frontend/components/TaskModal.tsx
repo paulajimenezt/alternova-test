@@ -16,6 +16,8 @@ interface CustomModalProps {
   title: string;
   taskTitle?: string;
   taskDescription?: string;
+  showDeleteButton: boolean;
+  onDelete: () => void;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -25,6 +27,8 @@ const CustomModal: React.FC<CustomModalProps> = ({
   title,
   taskTitle,
   taskDescription,
+  showDeleteButton,
+  onDelete,
 }) => {
   return (
     <Modal
@@ -59,9 +63,19 @@ const CustomModal: React.FC<CustomModalProps> = ({
             placeholderTextColor="#C0C0C0"
             placeholder={taskDescription ?? "Task Description"}
           />
-          <TouchableOpacity style={styles.createButton} onPress={onCreate}>
-            <Text style={styles.buttonText}>{title}</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonContainer}>
+            {showDeleteButton && (
+              <TouchableOpacity
+                style={[styles.button, styles.deleteButton]}
+                onPress={onDelete}
+              >
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.button} onPress={onCreate}>
+              <Text style={styles.buttonText}>{title}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>
@@ -133,7 +147,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: "black",
     fontSize: 15,
-    width: "90%",
+    width: "95%",
     padding: 10,
   },
 
@@ -143,13 +157,26 @@ const styles = StyleSheet.create({
     height: 80,
   },
 
-  createButton: {
-    backgroundColor: "#006400",
-    borderRadius: 15,
-    padding: 10,
-    paddingHorizontal: 20,
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "95%",
     marginTop: 10,
+  },
+
+  button: {
+    padding: 10,
+    borderRadius: 15,
+    paddingHorizontal: 20,
+    marginHorizontal: 10,
+    backgroundColor: "#006400",
     elevation: 2,
+    minWidth: "35%",
+    maxWidth: "60%",
+  },
+
+  deleteButton: {
+    backgroundColor: "#BA0021",
   },
 
   buttonText: {

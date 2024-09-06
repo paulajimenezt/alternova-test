@@ -4,6 +4,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import TaskModal from "./TaskModal";
 
 export interface Task {
+  id: number;
   title: string;
   description: string;
   isCompleted: boolean;
@@ -11,6 +12,11 @@ export interface Task {
 
 const TaskCard = (task: Task) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleDeleteTask = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <TouchableOpacity
       style={styles.container}
@@ -29,14 +35,14 @@ const TaskCard = (task: Task) => {
       </View>
 
       <TaskModal
-        onClose={() => {
-          setIsModalOpen(!isModalOpen);
-        }}
+        onClose={() => setIsModalOpen(!isModalOpen)}
         visible={isModalOpen}
         title={"Edit task"}
         taskTitle={task.title}
         taskDescription={task.description}
         onCreate={() => {}}
+        showDeleteButton={true}
+        onDelete={handleDeleteTask}
       />
     </TouchableOpacity>
   );
@@ -49,10 +55,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "white",
-    borderRadius: 20,
+    borderRadius: 15,
     padding: 20,
-    margin: 20,
+    marginHorizontal: 10,
+    marginVertical: 5,
     maxWidth: 860,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 3,
   },
   textContainer: {
     flex: 1,
