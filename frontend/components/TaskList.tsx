@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import TaskCard, { Task } from "@/components/TaskCard";
+import TaskCard, { Task, TaskStatus } from "@/components/TaskCard";
 import useTasks from "@/hooks/useTasks";
 import TaskModal from "./TaskModal";
 
@@ -12,8 +12,10 @@ const TaskList: React.FC<TaskListProps> = ({ isActive }) => {
   const { tasks, updateTask, addTask, deleteTask, completeTask } = useTasks();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const activeTasks = tasks.filter((task) => !task.isCompleted);
-  const completedTasks = tasks.filter((task) => task.isCompleted);
+  const activeTasks = tasks.filter((task) => task.status === TaskStatus.Active);
+  const completedTasks = tasks.filter(
+    (task) => task.status === TaskStatus.Complete
+  );
 
   const handleCardClicked = (task: Task) => {
     setSelectedTask(task);
@@ -26,6 +28,7 @@ const TaskList: React.FC<TaskListProps> = ({ isActive }) => {
   };
 
   const handleSubmitTask = (task: Partial<Task> | Task) => {
+    console.log("updating task", task);
     if (task.id) {
       updateTask(task as Task);
     } else {
@@ -65,7 +68,7 @@ const TaskList: React.FC<TaskListProps> = ({ isActive }) => {
                 key={task.id}
                 {...task}
                 onCardClicked={() => handleCardClicked(task)}
-                onTaskCompleted={() => {}}
+                onTaskCompleted={() => handleTaskCompleted(task)}
               />
             ))
           : completedTasks.map((task: Task) => (
@@ -73,7 +76,7 @@ const TaskList: React.FC<TaskListProps> = ({ isActive }) => {
                 key={task.id}
                 {...task}
                 onCardClicked={() => handleCardClicked(task)}
-                onTaskCompleted={() => {}}
+                onTaskCompleted={() => handleTaskCompleted(task)}
               />
             ))}
       </View>

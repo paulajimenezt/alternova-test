@@ -33,10 +33,9 @@ export class TaskController {
     if (isNaN(taskId)) {
       return res.status(400).json({ error: "Invalid task ID" });
     }
-
     try {
-      const { title, description } = req.body;
-      await this.taskRepository.updateTask(taskId, title, description);
+      const { title, description, status } = req.body;
+      await this.taskRepository.updateTask(taskId, title, description, status);
       res.status(200).json({ message: "Task updated successfully" });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -48,7 +47,6 @@ export class TaskController {
     if (isNaN(taskId)) {
       return res.status(400).json({ error: "Invalid task ID" });
     }
-
     try {
       await this.taskRepository.markTaskAsComplete(taskId);
       res.status(200).json({ message: "Task marked as complete" });

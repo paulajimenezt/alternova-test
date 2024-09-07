@@ -7,7 +7,12 @@ export interface Task {
   id: number;
   title: string;
   description: string;
-  isCompleted: boolean;
+  status: TaskStatus;
+}
+
+export enum TaskStatus {
+  Active = "ACTIVE",
+  Complete = "COMPLETE",
 }
 
 interface TaskCardProps extends Task {
@@ -18,7 +23,7 @@ interface TaskCardProps extends Task {
 const TaskCard: React.FC<TaskCardProps> = ({
   title,
   description,
-  isCompleted,
+  status,
   onCardClicked,
   onTaskCompleted,
 }) => {
@@ -32,7 +37,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         style={styles.checkbox}
         onPress={() => onTaskCompleted()}
       >
-        {isCompleted ? (
+        {status === TaskStatus.Complete ? (
           <AntDesign name="checkcircle" size={30} color="green" />
         ) : (
           <AntDesign name="checkcircleo" size={30} color="gray" />

@@ -62,7 +62,8 @@ export default class TaskRepository {
   public async updateTask(
     taskId: number,
     title?: string,
-    description?: string
+    description?: string,
+    status?: TaskStatus
   ): Promise<void> {
     const updatedAt = new Date().toISOString();
     const params: any[] = [updatedAt];
@@ -74,6 +75,10 @@ export default class TaskRepository {
     if (description) {
       updateQuery += ", description = ?";
       params.push(description);
+    }
+    if (status) {
+      updateQuery += ", status = ?";
+      params.push(status);
     }
     updateQuery += " WHERE id = ?";
     params.push(taskId);

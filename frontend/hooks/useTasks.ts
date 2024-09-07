@@ -1,30 +1,28 @@
-import { Task } from "@/components/TaskCard";
+import { Task, TaskStatus } from "@/components/TaskCard";
 import { useState, useEffect } from "react";
 
 const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/tasks`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await response.json();
-        setTasks(data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-        console.error(error.stack);
-      }
-    };
     fetchTasks();
   }, []);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/tasks`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      setTasks(data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      console.error(error.stack);
+    }
+  };
 
   const addTask = async (newTask: Partial<Task>) => {
     try {
@@ -39,7 +37,6 @@ const useTasks = () => {
       if (!response.ok) {
         throw new Error("Failed to add task");
       }
-
       const savedTask = await response.json();
       setTasks([...tasks, savedTask]);
     } catch (error) {
@@ -71,28 +68,29 @@ const useTasks = () => {
 
   const completeTask = async (updatedTask: Task) => {
     try {
+      const newStatus =
+        updatedTask.status === TaskStatus.Complete
+          ? TaskStatus.Active
+          : TaskStatus.Complete;
+      updatedTask.status = newStatus;
       const updatedTasks = tasks.map((task) =>
-        task.id === updatedTask.id ? { ...task, completed: true } : task
+        task.id === updatedTask.id ? { ...task, status: newStatus } : task
       );
       setTasks(updatedTasks);
-
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/tasks/${updatedTask.id}/complete`,
+        `${process.env.EXPO_PUBLIC_API_URL}/tasks/${updatedTask.id}/edit`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(updatedTask),
         }
       );
-
       if (!response.ok) {
         throw new Error("Failed to complete task");
       }
-      const savedTask = await response.json();
-      setTasks(
-        tasks.map((task) => (task.id === savedTask.id ? savedTask : task))
-      );
+      fetchTasks();
     } catch (error) {
       console.error("Error completing task:", error);
       setTasks(tasks);
@@ -106,7 +104,7 @@ const useTasks = () => {
       );
       setTasks(updatedTasks);
       const response = await fetch(
-        `${process.env.API_URL}/tasks/${updatedTask.id}/edit`,
+        `${process.env.EXPO_PUBLIC_API_URL}/tasks/${updatedTask.id}/edit`,
         {
           method: "POST",
           headers: {
