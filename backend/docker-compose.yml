@@ -1,21 +1,15 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - .:/usr/src/app
-    depends_on:
-      - db
+      - db_data:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
-      - DOCKER_DB_PATH=/data/database.db
-
-  db:
-    image: nouchka/sqlite3:latest
-    volumes:
-      - sqlite-data:/data
-    environment:
-      - SQLITE_DATABASE=/data/database.db
+      - DB_PATH=sqlite.db
 
 volumes:
-  sqlite-data:
+  db_data:

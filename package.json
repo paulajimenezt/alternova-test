@@ -2,11 +2,6 @@
   "name": "alternova-test",
   "version": "1.0.0",
   "description": "This is my subsmission for the techical task assesment for Alternova Inc.",
-  "main": "index.js",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
   "scripts": {
     "start": "npm run start:server && npm run start:client",
     "start:frontend": "npm --prefix ./frontend start",

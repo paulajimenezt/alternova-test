@@ -2,6 +2,7 @@
   "name": "alternova-frontend",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "prefix": "./",
   "scripts": {
     "start": "npx expo start",
     "android": "npx expo start --android",

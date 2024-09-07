@@ -1,12 +1,14 @@
 {
   "name": "alternova-backend",
   "version": "1.0.0",
-  "main": "index.js",
   "author": "Paula Jimenez",
   "license": "ISC",
+  "version": "1.0.0",
+  "prefix": "./",
   "scripts": {
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
+    "debug": "ts-node --inspect-brk src/server.ts",
     "build": "tsc",
     "test": "jest"
   },
