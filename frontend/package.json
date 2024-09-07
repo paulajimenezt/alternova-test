@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "prefix": "./",
   "scripts": {
-    "start": "npx expo start",
+    "start": "npx expo start --tunnel",
     "android": "npx expo start --android",
     "ios": "npx expo start --ios",
     "web": "npx expo start --web",
@@ -21,7 +21,7 @@
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
-    "expo": "~51.0.28",
+    "expo": "^51.0.32",
     "expo-constants": "~16.0.2",
     "expo-dev-client": "^4.0.26",
     "expo-font": "~12.0.9",
