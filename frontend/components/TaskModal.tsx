@@ -18,6 +18,9 @@ interface CustomModalProps {
   onSubmit: (task: Partial<Task> | Task) => void;
 }
 
+const TITLE_MAX_LENGTH = 50;
+const DESCRIPTION_MAX_LENGTH = 200;
+
 const CustomModal: React.FC<CustomModalProps> = ({
   visible,
   task,
@@ -27,13 +30,37 @@ const CustomModal: React.FC<CustomModalProps> = ({
 }) => {
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
+  const [titleError, setTitleError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
 
   useEffect(() => {
     setTitle(task?.title || "");
     setDescription(task?.description || "");
+    setTitleError("");
+    setDescriptionError("");
   }, [task]);
 
   const handleCreate = () => {
+    let valid = true;
+
+    if (!title.trim()) {
+      setTitleError("Title cannot be empty");
+      valid = false;
+    } else {
+      setTitleError("");
+    }
+
+    if (!description.trim()) {
+      setDescriptionError("Description cannot be empty");
+      valid = false;
+    } else {
+      setDescriptionError("");
+    }
+
+    if (!valid) {
+      return;
+    }
+
     let updatedTask: Partial<Task> | null | undefined = task;
     if (!updatedTask) {
       updatedTask = {
@@ -71,21 +98,39 @@ const CustomModal: React.FC<CustomModalProps> = ({
           </View>
           <View style={styles.horizontalLine} />
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, titleError ? styles.errorInput : null]}
             placeholderTextColor="#C0C0C0"
             placeholder="Task title"
             value={title}
-            onChangeText={setTitle}
+            onChangeText={(text) => setTitle(text.slice(0, TITLE_MAX_LENGTH))}
           />
+          {titleError ? (
+            <Text style={styles.errorText}>{titleError}</Text>
+          ) : null}
+          <Text style={styles.charCount}>
+            {title.length}/{TITLE_MAX_LENGTH}
+          </Text>
           <TextInput
-            style={[styles.textInput, styles.multilineTextInput]}
+            style={[
+              styles.textInput,
+              styles.multilineTextInput,
+              descriptionError ? styles.errorInput : null,
+            ]}
             multiline={true}
             blurOnSubmit={true}
             placeholderTextColor="#C0C0C0"
             placeholder="Task Description"
             value={description}
-            onChangeText={setDescription}
+            onChangeText={(text) =>
+              setDescription(text.slice(0, DESCRIPTION_MAX_LENGTH))
+            }
           />
+          {descriptionError ? (
+            <Text style={styles.errorText}>{descriptionError}</Text>
+          ) : null}
+          <Text style={styles.charCount}>
+            {description.length}/{DESCRIPTION_MAX_LENGTH}
+          </Text>
           <View style={styles.buttonContainer}>
             {task && (
               <TouchableOpacity
@@ -180,6 +225,24 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     maxHeight: 200,
     height: 80,
+  },
+
+  errorInput: {
+    borderColor: "#BA0021",
+  },
+
+  errorText: {
+    color: "#BA0021",
+    alignSelf: "flex-start",
+    marginLeft: "2.5%",
+    marginBottom: 10,
+  },
+
+  charCount: {
+    alignSelf: "flex-end",
+    marginRight: "2.5%",
+    color: "#899499",
+    marginBottom: 10,
   },
 
   buttonContainer: {
