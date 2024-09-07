@@ -35,8 +35,13 @@ export class TaskController {
     }
     try {
       const { title, description, status } = req.body;
-      await this.taskRepository.updateTask(taskId, title, description, status);
-      res.status(200).json({ message: "Task updated successfully" });
+      const updatedTask = await this.taskRepository.updateTask(
+        taskId,
+        title,
+        description,
+        status
+      );
+      res.status(200).json(updatedTask);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

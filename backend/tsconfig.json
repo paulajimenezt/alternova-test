@@ -5,9 +5,10 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "useUnknownInCatchVariables": false,
-    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@/*": [

@@ -6,37 +6,34 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
-      - DOCKER_DB_PATH=/data/database.db
+      - DB_PATH=sqlite.db
     volumes:
-      - ./backend:/usr/src/app
+      - db_data:/usr/src/app
     networks:
       - backend-frontend-network
-    depends_on:
-      - db
 
   frontend:
     build:
       context: ./frontend
     container_name: frontend_service
     ports:
-      - "19000:19000"
+      - 19000:19000
+      - 19001:19001
+      - 19002:19002
+      - "8081:8081"
     environment:
       - EXPO_PUBLIC_API_URL=http://backend_service:3000
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+      - REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
     volumes:
-      - ./frontend:/usr/src/app
+      - ./frontend:/usr/src/front
+    stdin_open: true
+    tty: true
     networks:
       - backend-frontend-network
 
-  db:
-    image: nouchka/sqlite3:latest
-    volumes:
-      - sqlite-data:/data
-    environment:
-      - SQLITE_DATABASE=/data/database.db
-
 volumes:
-  sqlite-data:
+  db_data:
 
 networks:
   backend-frontend-network:

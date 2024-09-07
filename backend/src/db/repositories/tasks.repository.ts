@@ -3,7 +3,7 @@ import { promisify } from "util";
 import { Task, TaskStatus } from "../models/Task.model";
 
 export default class TaskRepository {
-  private db: Database;
+  public db: Database;
   private run: (sql: string, params?: any[]) => Promise<void>;
   private all: (sql: string, params?: any[]) => Promise<Task[]>;
   private get: (sql: string, params?: any[]) => Promise<Task>;
@@ -64,7 +64,7 @@ export default class TaskRepository {
     title?: string,
     description?: string,
     status?: TaskStatus
-  ): Promise<void> {
+  ): Promise<Task> {
     const updatedAt = new Date().toISOString();
     const params: any[] = [updatedAt];
     let updateQuery = "UPDATE tasks SET updatedAt = ?";
@@ -84,6 +84,10 @@ export default class TaskRepository {
     params.push(taskId);
     try {
       await this.run(updateQuery, params);
+      const updatedTask = await this.get(`SELECT * FROM tasks WHERE id = ?`, [
+        taskId,
+      ]);
+      return updatedTask;
     } catch (err) {
       console.error("Error updating task:", err.message);
       throw err;

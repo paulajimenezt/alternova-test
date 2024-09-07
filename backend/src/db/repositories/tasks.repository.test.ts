@@ -6,28 +6,27 @@ let taskRepository: TaskRepository;
 beforeEach(() => {
   const db = initializeDatabase().db;
   taskRepository = new TaskRepository(db);
-  taskRepository.createTable();
 });
 
 afterAll(() => {
-  // Close the database connection or cleanup if needed
+  taskRepository.db.close();
 });
 
 describe("TaskRepository", () => {
-  test.only("should insert a new task", () => {
-    const newTask: Task = {
+  test("should insert a new task", async () => {
+    const newTask: Omit<Task, "id"> = {
       title: "Test Task",
       description: "This is a test task",
       status: TaskStatus.ACTIVE,
       createdAt: new Date().toISOString(),
     };
 
-    taskRepository.insertTask(newTask);
-    taskRepository.getAllTasks().then((tasks) => {
-      expect(tasks).toHaveLength(1);
-      expect(tasks[0].title).toBe("Test Task");
-      expect(tasks[0].status).toBe(TaskStatus.ACTIVE);
-    });
+    await taskRepository.createTable();
+    await taskRepository.insertTask(newTask);
+    const tasks = await taskRepository.getAllTasks();
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0].title).toBe("Test Task");
+    expect(tasks[0].status).toBe(TaskStatus.ACTIVE);
   });
 
   test("should mark a task as complete", async () => {
@@ -39,13 +38,13 @@ describe("TaskRepository", () => {
       updatedAt: new Date().toISOString(),
     };
 
-    taskRepository.insertTask(newTask);
+    await taskRepository.createTable();
+    await taskRepository.insertTask(newTask);
 
     const tasksBefore = await taskRepository.getAllTasks();
     const taskId = tasksBefore[0].id as number;
 
-    taskRepository.markTaskAsComplete(taskId);
-
+    await taskRepository.markTaskAsComplete(taskId);
     const tasksAfter = await taskRepository.getAllTasks();
     expect(tasksAfter[0].status).toBe(TaskStatus.COMPLETE);
     expect(tasksAfter[0].completedAt).not.toBeNull();
@@ -60,13 +59,13 @@ describe("TaskRepository", () => {
       updatedAt: new Date().toISOString(),
     };
 
-    taskRepository.insertTask(newTask);
+    await taskRepository.createTable();
+    await taskRepository.insertTask(newTask);
 
     let tasks = await taskRepository.getAllTasks();
     const taskId = tasks[0].id as number;
 
-    taskRepository.deleteTask(taskId);
-
+    await taskRepository.deleteTask(taskId);
     tasks = await taskRepository.getAllTasks();
     expect(tasks).toHaveLength(0);
   });
