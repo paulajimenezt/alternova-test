@@ -1,24 +1,23 @@
-# Use the official Node.js image
-FROM node:20
+# Use a Node.js base image
+FROM node:18-alpine
 
-# Create and set the working directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app 
+# Set the working directory inside the container
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
-COPY package.json /usr/src/app/
+# Copy the package.json and package-lock.json from the parent folder
+COPY ../../package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies from the parent folder
+RUN npm install --legacy-peer-deps
 
-# Copy the rest of your application code
-COPY . /usr/src/app
+# Copy the rest of the backend code to the container
+COPY ./backend ./
 
-# Build the TypeScript code
+# Build the TypeScript files
 RUN npm run build
 
-# Expose the port that the app runs on
+# Expose the port your server is running on (default: 3000)
 EXPOSE 3000
 
-# Command to run your app
-CMD ["npm", "run", "start"]
+# Command to start the application
+CMD ["npm", "start"]

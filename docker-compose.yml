@@ -1,0 +1,43 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend_service
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DOCKER_DB_PATH=/data/database.db
+    volumes:
+      - ./backend:/usr/src/app
+    networks:
+      - backend-frontend-network
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend_service
+    ports:
+      - "19000:19000"
+    environment:
+      - EXPO_PUBLIC_API_URL=http://backend_service:3000
+    volumes:
+      - ./frontend:/usr/src/app
+    networks:
+      - backend-frontend-network
+
+  db:
+    image: nouchka/sqlite3:latest
+    volumes:
+      - sqlite-data:/data
+    environment:
+      - SQLITE_DATABASE=/data/database.db
+
+volumes:
+  sqlite-data:
+
+networks:
+  backend-frontend-network:
+    driver: bridge

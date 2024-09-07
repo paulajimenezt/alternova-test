@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import TaskModal from "./TaskModal";
 
 export interface Task {
   id: number;
