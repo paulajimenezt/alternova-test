@@ -1,9 +1,17 @@
 import express from "express";
-import tasksRouter from "./routes/tasks.routes";
+import { initializeRepositories } from "./db/db";
+import { TaskController } from "./controllers/tasks.controller";
+import createTaskRouter from "./routes/tasks.routes";
 
 const app = express();
 
-app.use(express.json());
-app.use("/tasks", tasksRouter);
+const initializeApp = async () => {
+  const { tasksRepository } = await initializeRepositories();
+  const taskController = new TaskController(tasksRepository);
 
-export default app;
+  app.use(express.json());
+  app.use("/tasks", createTaskRouter(taskController));
+};
+
+const appInitialization = initializeApp();
+export { app, appInitialization };

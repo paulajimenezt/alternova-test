@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "../testServer";
+import app from "../utils/testServer";
 
 describe("Tasks Routes", () => {
   it("should return a JSON response with 'GET /tasks'", async () => {

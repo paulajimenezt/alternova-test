@@ -6,6 +6,7 @@
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
+    "useUnknownInCatchVariables": false,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
