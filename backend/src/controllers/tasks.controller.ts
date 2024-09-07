@@ -21,15 +21,15 @@ export class TaskController {
   async createTask(req: Request, res: Response) {
     try {
       const task: Omit<Task, "id"> = req.body;
-      await this.taskRepository.insertTask(task);
-      res.status(201).json({ message: "Task created successfully" });
+      const createdTask = await this.taskRepository.insertTask(task);
+      res.status(201).json(createdTask);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   }
 
   async updateTask(req: Request, res: Response) {
-    const taskId = parseInt(req.params.id, 10);
+    const taskId = parseInt(req.params.taskId, 10);
     if (isNaN(taskId)) {
       return res.status(400).json({ error: "Invalid task ID" });
     }
@@ -44,7 +44,7 @@ export class TaskController {
   }
 
   async markTaskAsComplete(req: Request, res: Response) {
-    const taskId = parseInt(req.params.id, 10);
+    const taskId = parseInt(req.params.taskId, 10);
     if (isNaN(taskId)) {
       return res.status(400).json({ error: "Invalid task ID" });
     }
@@ -58,11 +58,10 @@ export class TaskController {
   }
 
   async deleteTask(req: Request, res: Response) {
-    const taskId = parseInt(req.params.id, 10);
+    const taskId = parseInt(req.params.taskId, 10);
     if (isNaN(taskId)) {
       return res.status(400).json({ error: "Invalid task ID" });
     }
-
     try {
       await this.taskRepository.deleteTask(taskId);
       res.status(200).json({ message: "Task deleted successfully" });

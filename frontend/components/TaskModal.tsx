@@ -1,5 +1,5 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   View,
@@ -8,28 +8,45 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import { Task } from "./TaskCard";
 
 interface CustomModalProps {
+  task?: Task | null;
   visible: boolean;
   onClose: () => void;
-  onCreate: () => void;
-  title: string;
-  taskTitle?: string;
-  taskDescription?: string;
-  showDeleteButton: boolean;
-  onDelete: () => void;
+  onDelete: (task: Task) => void;
+  onSubmit: (task: Partial<Task> | Task) => void;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
   visible,
+  task,
   onClose,
-  onCreate,
-  title,
-  taskTitle,
-  taskDescription,
-  showDeleteButton,
+  onSubmit,
   onDelete,
 }) => {
+  const [title, setTitle] = useState(task?.title || "");
+  const [description, setDescription] = useState(task?.description || "");
+
+  useEffect(() => {
+    setTitle(task?.title || "");
+    setDescription(task?.description || "");
+  }, [task]);
+
+  const handleCreate = () => {
+    let updatedTask: Partial<Task> | null | undefined = task;
+    if (!updatedTask) {
+      updatedTask = {
+        title: title,
+        description: description,
+      };
+    } else {
+      updatedTask.title = title;
+      updatedTask.description = description;
+    }
+    onSubmit(updatedTask);
+  };
+
   return (
     <Modal
       animationType="fade"
@@ -48,32 +65,40 @@ const CustomModal: React.FC<CustomModalProps> = ({
             <AntDesign name="closecircle" size={26} color="#BA0021" />
           </TouchableOpacity>
           <View style={styles.header}>
-            <Text style={styles.modalTitle}>{title}</Text>
+            <Text style={styles.modalTitle}>
+              {task ? "Edit Task" : "Add Task"}
+            </Text>
           </View>
           <View style={styles.horizontalLine} />
           <TextInput
             style={styles.textInput}
             placeholderTextColor="#C0C0C0"
-            placeholder={taskTitle ?? "Task title"}
+            placeholder="Task title"
+            value={title}
+            onChangeText={setTitle}
           />
           <TextInput
             style={[styles.textInput, styles.multilineTextInput]}
             multiline={true}
             blurOnSubmit={true}
             placeholderTextColor="#C0C0C0"
-            placeholder={taskDescription ?? "Task Description"}
+            placeholder="Task Description"
+            value={description}
+            onChangeText={setDescription}
           />
           <View style={styles.buttonContainer}>
-            {showDeleteButton && (
+            {task && (
               <TouchableOpacity
                 style={[styles.button, styles.deleteButton]}
-                onPress={onDelete}
+                onPress={() => onDelete(task)}
               >
                 <Text style={styles.buttonText}>Delete</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity style={styles.button} onPress={onCreate}>
-              <Text style={styles.buttonText}>{title}</Text>
+            <TouchableOpacity style={styles.button} onPress={handleCreate}>
+              <Text style={styles.buttonText}>
+                {task ? "Edit task" : "Add Task"}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

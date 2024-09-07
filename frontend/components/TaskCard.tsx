@@ -10,40 +10,34 @@ export interface Task {
   isCompleted: boolean;
 }
 
-const TaskCard = (task: Task) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+interface TaskCardProps extends Task {
+  onCardClicked: () => void;
+  onTaskCompleted: () => void;
+}
 
-  const handleDeleteTask = () => {
-    setIsModalOpen(false);
-  };
-
+const TaskCard: React.FC<TaskCardProps> = ({
+  title,
+  description,
+  isCompleted,
+  onCardClicked,
+  onTaskCompleted,
+}) => {
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={() => setIsModalOpen(!isModalOpen)}
-    >
+    <TouchableOpacity style={styles.container} onPress={() => onCardClicked()}>
       <View style={styles.textContainer}>
-        <Text style={styles.text}>{task.title}</Text>
-        <Text>{task.description}</Text>
+        <Text style={styles.text}>{title}</Text>
+        <Text>{description}</Text>
       </View>
-      <View style={styles.checkbox}>
-        {task.isCompleted ? (
+      <TouchableOpacity
+        style={styles.checkbox}
+        onPress={() => onTaskCompleted()}
+      >
+        {isCompleted ? (
           <AntDesign name="checkcircle" size={30} color="green" />
         ) : (
           <AntDesign name="checkcircleo" size={30} color="gray" />
         )}
-      </View>
-
-      <TaskModal
-        onClose={() => setIsModalOpen(!isModalOpen)}
-        visible={isModalOpen}
-        title={"Edit task"}
-        taskTitle={task.title}
-        taskDescription={task.description}
-        onCreate={() => {}}
-        showDeleteButton={true}
-        onDelete={handleDeleteTask}
-      />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 };

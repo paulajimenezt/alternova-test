@@ -5,12 +5,14 @@ import { Task, TaskStatus } from "../models/Task.model";
 export default class TaskRepository {
   private db: Database;
   private run: (sql: string, params?: any[]) => Promise<void>;
-  private all: (sql: string, params?: any[]) => Promise<any[]>;
+  private all: (sql: string, params?: any[]) => Promise<Task[]>;
+  private get: (sql: string, params?: any[]) => Promise<Task>;
 
   constructor(db: Database) {
     this.db = db;
     this.run = promisify(db.run.bind(db));
     this.all = promisify(db.all.bind(db));
+    this.get = promisify(db.get.bind(db));
   }
 
   public async createTable(): Promise<void> {
@@ -20,9 +22,9 @@ export default class TaskRepository {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT NOT NULL,
           description TEXT,
-          status TEXT NOT NULL,
-          createdAt TEXT NOT NULL,
-          updatedAt TEXT NOT NULL,
+          status TEXT NOT NULL CHECK (status IN ('ACTIVE', 'COMPLETE')),
+          createdAt TEXT default CURRENT_TIMESTAMP,
+          updatedAt TEXT,
           completedAt TEXT
         )`
       );
@@ -33,14 +35,24 @@ export default class TaskRepository {
     }
   }
 
-  public async insertTask(task: Omit<Task, "id">): Promise<void> {
-    const { title, description, status, createdAt, updatedAt, completedAt } =
-      task;
+  public async insertTask(task: Partial<Task>): Promise<Task> {
+    const createdAt = new Date().toISOString();
+    const status = TaskStatus.ACTIVE;
+    const { title, description } = task;
     try {
       await this.run(
-        `INSERT INTO tasks (title, description, status, createdAt, updatedAt, completedAt) VALUES (?, ?, ?, ?, ?, ?)`,
-        [title, description, status, createdAt, updatedAt, completedAt]
+        `INSERT INTO tasks (title, description, status, createdAt) VALUES (?, ?, ?, ?)`,
+        [title, description, status, createdAt]
       );
+
+      const result = await this.get(`SELECT last_insert_rowid() as id`);
+      const taskId = result.id;
+
+      const createdTask = await this.get(`SELECT * FROM tasks WHERE id = ?`, [
+        taskId,
+      ]);
+
+      return createdTask;
     } catch (err) {
       console.error("Error inserting task:", err.message);
       throw err;

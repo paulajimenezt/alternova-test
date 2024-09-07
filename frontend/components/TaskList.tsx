@@ -1,72 +1,91 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import TaskCard, { Task } from "@/components/TaskCard";
+import useTasks from "@/hooks/useTasks";
+import TaskModal from "./TaskModal";
 
 interface TaskListProps {
   isActive: boolean;
-  onAddTask: () => void;
-  onEditTask: (task: Task) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({
-  isActive,
-  onAddTask,
-  onEditTask,
-}) => {
-  const activeData: Task[] = [
-    {
-      id: 1,
-      title: "Task 1",
-      description: "Description of task 1",
-      isCompleted: false,
-    },
-    {
-      id: 2,
-      title: "Task 2",
-      description: "Description of task 2",
-      isCompleted: false,
-    },
-    {
-      id: 3,
-      title: "Task 3",
-      description: "Description of task 3",
-      isCompleted: false,
-    },
-  ];
+const TaskList: React.FC<TaskListProps> = ({ isActive }) => {
+  const { tasks, updateTask, addTask, deleteTask, completeTask } = useTasks();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const activeTasks = tasks.filter((task) => !task.isCompleted);
+  const completedTasks = tasks.filter((task) => task.isCompleted);
 
-  const completedData: Task[] = [
-    {
-      id: 4,
-      title: "Task 4",
-      description: "Complete task 4",
-      isCompleted: true,
-    },
-    {
-      id: 5,
-      title: "Task 5",
-      description: "Complete task 5",
-      isCompleted: true,
-    },
-  ];
+  const handleCardClicked = (task: Task) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleAddTask = () => {
+    setSelectedTask(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmitTask = (task: Partial<Task> | Task) => {
+    if (task.id) {
+      updateTask(task as Task);
+    } else {
+      addTask(task);
+    }
+    setSelectedTask(null);
+    setIsModalOpen(false);
+  };
+
+  const handleTaskCompleted = (task: Task) => {
+    completeTask(task);
+  };
+
+  const handleDeleteTask = (task: Task) => {
+    setSelectedTask(null);
+    setIsModalOpen(false);
+    deleteTask(task);
+  };
 
   return (
-    <View style={styles.taskList}>
-      <View style={styles.header}>
-        <Text style={styles.subtitle}>
-          {isActive ? "Active tasks" : "Completed tasks"}
-        </Text>
-        <TouchableOpacity style={styles.addButton} onPress={onAddTask}>
-          <Text style={styles.addTaskText}>Add new task</Text>
-        </TouchableOpacity>
+    <>
+      <View style={styles.taskList}>
+        <View style={styles.header}>
+          <Text style={styles.subtitle}>
+            {isActive ? "Active tasks" : "Completed tasks"}
+          </Text>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => handleAddTask()}
+          >
+            <Text style={styles.addTaskText}>Add new task</Text>
+          </TouchableOpacity>
+        </View>
+        {isActive
+          ? activeTasks.map((task: Task) => (
+              <TaskCard
+                key={task.id}
+                {...task}
+                onCardClicked={() => handleCardClicked(task)}
+                onTaskCompleted={() => {}}
+              />
+            ))
+          : completedTasks.map((task: Task) => (
+              <TaskCard
+                key={task.id}
+                {...task}
+                onCardClicked={() => handleCardClicked(task)}
+                onTaskCompleted={() => {}}
+              />
+            ))}
       </View>
-      {isActive
-        ? activeData.map((task: any) => (
-            <TaskCard key={task.id} {...task} onEdit={() => onEditTask(task)} />
-          ))
-        : completedData.map((task: any) => (
-            <TaskCard key={task.id} {...task} onEdit={() => onEditTask(task)} />
-          ))}
-    </View>
+
+      <TaskModal
+        task={selectedTask}
+        visible={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={(task) => handleSubmitTask(task)}
+        onDelete={(task) => handleDeleteTask(task)}
+      />
+    </>
   );
 };
 
